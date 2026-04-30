@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLOW-MASTER SYSTEMS | Drainage Canal Flow Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #fafafa;
+            --bg-hover: #f0f0f2;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6b6b;
+            --text-muted: #999999;
+            --accent-pink: #e91e8c;
+            --accent-pink-light: #f472b6;
+            --accent-pink-bg: rgba(233, 30, 140, 0.06);
+            --border-color: #e5e5e5;
+            --border-dark: #1a1a1a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+            --radius: 4px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 14px; }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            display: block;
+            border: 1px solid var(--border-color);  
+        }
+
+        .header-brand {
+            font-size: 12px; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-primary);
+        }
+
+        .header-brand span {
+            display: block; font-size: 10px; color: var(--text-muted);
+            font-weight: 400; letter-spacing: 0.12em; margin-top: 1px;
+        }
+
+        .header-right {
+            font-family: var(--mono); font-size: 10px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+
+        .hero {
+            background: var(--bg-secondary);
+            padding: 32px 48px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 2fr 1fr;
+            gap: 0;
+            align-items: start;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-badge {
+            display: inline-block; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.15em;
+            color: var(--accent-pink); margin-bottom: 12px;
+            padding: 4px 10px; background: var(--accent-pink-bg);
+            border-radius: 2px;
+        }
+
+        .hero-title {
+            font-size: 48px; font-weight: 900; line-height: 1.05;
+            letter-spacing: -0.03em; text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .hero-title .highlight { color: var(--accent-pink); }
+
+        .hero-desc {
+            font-size: 13px; color: var(--text-secondary);
+            line-height: 1.6; max-width: 480px;
+        }
+
+        .quick-reference {
+            background: var(--text-primary); color: white;
+            padding: 24px; border-radius: var(--radius);
+            width: 100%;
+        }
+
+        .quick-reference h3 {
+            font-family: var(--mono); font-size: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            color: var(--accent-pink); margin-bottom: 12px;
+            padding-bottom: 8px; border-bottom: 1px solid #333;
+        }
+
+        .quick-reference ul {
+            list-style: none; font-size: 11px;
+            line-height: 1.9; color: #ccc;
+        }
+
+        .quick-reference li {
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+
+        .quick-reference li::before {
+            content: "›"; color: var(--accent-pink);
+            font-weight: 700; flex-shrink: 0;
+        }
+
+        .quick-reference .csv-example {
+            margin-top: 12px; padding-top: 10px;
+            border-top: 1px solid #333;
+            font-family: var(--mono); font-size: 9px;
+            color: #666; line-height: 1.6;
+        }
+
+        .main-wrapper {
+            max-width: 1200px; margin: 0 auto;
+            padding: 32px 48px;
+        }
+
+        .section-title {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            margin-bottom: 20px; display: flex;
+            align-items: center; gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .section-title::before {
+            content: ""; display: block;
+            width: 5px; height: 5px;
+            background: var(--text-primary);
+            border-radius: 50%;
+        }
+
+        .section-title.pink::before { background: var(--accent-pink); }
+
+        .dropzone-wrapper {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px; margin-bottom: 24px;
+        }
+
+        .dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            padding: 56px 32px; text-align: center;
+            transition: all 0.25s ease; cursor: pointer;
+            position: relative; background: var(--bg-tertiary);
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent-pink);
+            background: var(--accent-pink-bg);
+        }
+
+        .dropzone-icon {
+            width: 48px; height: 48px; margin: 0 auto 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 20px; color: var(--text-muted);
+            transition: all 0.25s;
+        }
+
+        .dropzone:hover .dropzone-icon {
+            border-color: var(--accent-pink); color: var(--accent-pink);
+            transform: translateY(-2px);
+        }
+
+        .dropzone-text {
+            font-size: 13px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 6px; color: var(--text-primary);
+        }
+
+        .dropzone-sub {
+            font-size: 12px; color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .btn-browse {
+            display: inline-block; padding: 10px 24px;
+            border: 1.5px solid var(--border-dark); background: transparent;
+            font-family: var(--mono); font-size: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            cursor: pointer; transition: all 0.2s;
+            border-radius: var(--radius);
+        }
+
+        .btn-browse:hover {
+            background: var(--text-primary); color: white;
+            transform: translateY(-1px); box-shadow: var(--shadow-sm);
+        }
+
+        .file-input { display: none; }
+
+        .file-info {
+            margin-top: 20px; padding: 16px 20px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            display: none; align-items: center; gap: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .file-info.show { display: flex; }
+
+        .file-info-icon {
+            width: 36px; height: 36px; background: var(--success);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+
+        .file-info-text { flex: 1; }
+        .file-info-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .file-info-meta { font-size: 11px; color: var(--text-muted); font-family: var(--mono); margin-top: 2px; }
+
+        .setup-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px; margin-bottom: 24px;
+        }
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group { margin-bottom: 0; }
+
+        .form-label {
+            display: block; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%; padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius); font-family: var(--sans);
+            font-size: 14px; background: var(--bg-secondary);
+            transition: all 0.2s; color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none; border-color: var(--accent-pink);
+            box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.1);
+        }
+
+        .form-input::placeholder { color: #ccc; font-size: 13px; }
+
+        .input-hint {
+            font-size: 10px; color: var(--text-muted);
+            margin-top: 6px; text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .setup-divider { height: 1px; background: var(--border-color); margin: 24px 0; }
+
+        .detected-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); gap: 16px;
+        }
+
+        .detected-item {
+            padding: 16px; background: var(--bg-tertiary);
+            border-radius: var(--radius); border: 1px solid var(--border-color);
+        }
+
+        .detected-label {
+            font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); margin-bottom: 8px;
+        }
+
+        .detected-value {
+            font-family: var(--mono); font-size: 16px;
+            font-weight: 600; color: var(--text-primary);
+        }
+
+        .detected-value.missing { color: var(--text-muted); font-size: 13px; }
+        .detected-value.status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .compute-section { margin-top: 24px; }
+
+        .btn-compute {
+            width: 100%; padding: 16px; background: var(--text-primary);
+            color: white; border: none; font-family: var(--mono);
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.12em; cursor: pointer; transition: all 0.25s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; border-radius: var(--radius);
+        }
+
+        .btn-compute:hover:not(:disabled) {
+            background: var(--accent-pink); transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-compute:disabled {
+            opacity: 0.35; cursor: not-allowed;
+            transform: none; box-shadow: none;
+        }
+
+        .results-area {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 40px; margin-bottom: 24px;
+            min-height: 200px;
+        }
+
+        .results-placeholder {
+            text-align: center; padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .results-placeholder-icon {
+            width: 56px; height: 56px; margin: 0 auto 16px;
+            background: var(--bg-tertiary);
+            border: 1.5px dashed var(--border-color);
+            border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 22px;
+        }
+
+        .results-placeholder-title {
+            font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 6px; color: var(--text-primary);
+        }
+
+        .results-placeholder-desc { font-size: 13px; color: var(--text-muted); }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            padding: 24px; border: 1px solid var(--border-color);
+            border-radius: var(--radius); background: var(--bg-secondary);
+            transition: all 0.2s;
+        }
+
+        .summary-card:hover {
+            border-color: var(--accent-pink); box-shadow: var(--shadow-sm);
+        }
+
+        .summary-card.primary {
+            border-color: var(--accent-pink); background: var(--accent-pink-bg);
+        }
+
+        .summary-label {
+            font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            color: var(--text-muted); margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-family: var(--mono); font-size: 28px;
+            font-weight: 700; color: var(--text-primary); line-height: 1.2;
+        }
+
+        .summary-unit {
+            font-size: 11px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px;
+        }
+
+        .summary-card.primary .summary-value { color: var(--accent-pink); }
+
+        .chart-container {
+            margin-bottom: 32px; border: 1px solid var(--border-color);
+            border-radius: var(--radius); padding: 24px;
+            background: var(--bg-secondary); position: relative;
+        }
+
+        .chart-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .chart-title::before { content: "◆"; color: var(--accent-pink); font-size: 8px; }
+
+        .chart-meta {
+            font-family: var(--mono); font-size: 10px;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .chart-wrapper {
+            position: relative; width: 100%; height: 320px;
+        }
+
+        #chartCanvas { width: 100%; height: 100%; cursor: crosshair; }
+
+        .chart-tooltip {
+            position: absolute; background: var(--text-primary);
+            color: white; padding: 10px 14px;
+            border-radius: var(--radius); font-family: var(--mono);
+            font-size: 11px; pointer-events: none; opacity: 0;
+            transition: opacity 0.15s; z-index: 50;
+            box-shadow: var(--shadow-lg); white-space: nowrap;
+        }
+
+        .chart-tooltip.show { opacity: 1; }
+
+        .chart-tooltip-row {
+            display: flex; gap: 12px; margin-bottom: 4px;
+        }
+
+        .chart-tooltip-row:last-child { margin-bottom: 0; }
+
+        .chart-tooltip-label {
+            color: var(--text-muted); font-size: 9px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            min-width: 50px;
+        }
+
+        .chart-tooltip-value { font-weight: 600; color: var(--accent-pink-light); }
+
+        .comparison-section { margin-bottom: 32px; }
+
+        .comparison-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 16px;
+        }
+
+        .comparison-title {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .comparison-title::before { content: "◆"; color: var(--accent-pink); font-size: 8px; }
+
+        .export-btns { display: flex; gap: 8px; }
+
+        .btn-export {
+            padding: 8px 16px; border: 1px solid var(--border-color);
+            background: var(--bg-secondary); font-family: var(--mono);
+            font-size: 9px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s;
+            border-radius: var(--radius); display: flex;
+            align-items: center; gap: 6px;
+        }
+
+        .btn-export:hover {
+            border-color: var(--text-primary); background: var(--text-primary); color: white;
+        }
+
+        .comparison-table {
+            width: 100%; border-collapse: separate;
+            border-spacing: 0; font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius); overflow: hidden;
+        }
+
+        .comparison-table th {
+            text-align: left; padding: 14px 16px;
+            font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); background: var(--bg-tertiary);
+            border-bottom: 2px solid var(--text-primary);
+        }
+
+        .comparison-table td {
+            padding: 16px; border-bottom: 1px solid var(--border-color);
+            font-family: var(--mono); font-size: 12px;
+        }
+
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table tr:hover td { background: var(--bg-tertiary); }
+
+        .method-name {
+            font-family: var(--sans); font-size: 13px;
+            font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
+        }
+
+        .method-desc {
+            font-family: var(--sans); font-size: 11px;
+            color: var(--text-muted); font-weight: 400;
+        }
+
+        .formula {
+            font-family: var(--mono); font-size: 11px;
+            color: var(--text-secondary); background: var(--bg-tertiary);
+            padding: 4px 8px; border-radius: 3px; display: inline-block;
+        }
+
+        .volume-value { font-weight: 700; font-size: 14px; }
+        .volume-value.simpson { color: var(--accent-pink); }
+
+        .comparison-footer {
+            margin-top: 16px; padding: 12px 16px;
+            background: var(--bg-tertiary); border-radius: var(--radius);
+            font-family: var(--mono); font-size: 10px;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-section { margin-bottom: 32px; }
+
+        .data-table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+        }
+
+        .data-table {
+            width: 100%; border-collapse: collapse; font-size: 13px;
+        }
+
+        .data-table th {
+            text-align: left; padding: 12px 16px;
+            font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); background: var(--bg-tertiary);
+            border-bottom: 2px solid var(--text-primary); white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 12px 16px; border-bottom: 1px solid var(--border-color);
+            font-family: var(--mono); font-size: 12px;
+        }
+
+        .data-table tr:hover td { background: var(--bg-tertiary); }
+        .data-table tr:last-child td { border-bottom: none; }
+
+        .audit-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px; margin-bottom: 24px;
+        }
+
+        .audit-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
+        }
+
+        .audit-title {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .audit-title::before {
+            content: ""; display: block;
+            width: 5px; height: 5px;
+            background: var(--accent-pink); border-radius: 50%;
+        }
+
+        .audit-count {
+            font-family: var(--mono); font-size: 10px;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .audit-table {
+            width: 100%; border-collapse: separate;
+            border-spacing: 0; font-size: 12px;
+        }
+
+        .audit-table th {
+            text-align: left; padding: 12px 16px;
+            font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); border-bottom: 2px solid var(--text-primary);
+        }
+
+        .audit-table td {
+            padding: 14px 16px; border-bottom: 1px solid var(--border-color);
+            font-family: var(--mono); font-size: 11px;
+        }
+
+        .audit-table tbody tr {
+            cursor: pointer; transition: all 0.15s;
+        }
+
+        .audit-table tbody tr:hover { background: var(--bg-tertiary); }
+        .audit-table tbody tr:active { background: var(--accent-pink-bg); }
+
+        .audit-actions {
+            display: flex; gap: 6px; opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .audit-table tbody tr:hover .audit-actions { opacity: 1; }
+
+        .audit-btn {
+            width: 28px; height: 28px;
+            border: 1px solid var(--border-color); background: var(--bg-secondary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--text-muted); transition: all 0.2s;
+            border-radius: var(--radius);
+        }
+
+        .audit-btn:hover {
+            border-color: var(--error); color: var(--error);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .audit-empty {
+            text-align: center; padding: 40px;
+            color: var(--text-muted); font-size: 13px;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: var(--bg-secondary); border-radius: var(--radius);
+            width: 90%; max-width: 800px; max-height: 90vh;
+            overflow-y: auto; box-shadow: var(--shadow-lg);
+            transform: translateY(20px) scale(0.98);
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            padding: 24px 32px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .modal-title {
+            font-size: 14px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+
+        .modal-close {
+            width: 32px; height: 32px; border: 1px solid var(--border-color);
+            background: transparent; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: var(--text-muted);
+            transition: all 0.2s; border-radius: var(--radius);
+        }
+
+        .modal-close:hover { border-color: var(--error); color: var(--error); }
+
+        .modal-body { padding: 32px; }
+
+        .modal-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .modal-summary-card {
+            padding: 20px; background: var(--bg-tertiary);
+            border-radius: var(--radius); border: 1px solid var(--border-color);
+        }
+
+        .modal-summary-label {
+            font-size: 9px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+
+        .modal-summary-value {
+            font-family: var(--mono); font-size: 20px;
+            font-weight: 700; color: var(--text-primary);
+        }
+
+        .modal-summary-value.pink { color: var(--accent-pink); }
+
+        .modal-chart-container {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius); padding: 20px;
+            margin-bottom: 24px; background: var(--bg-secondary);
+        }
+
+        .modal-chart-wrapper {
+            position: relative; width: 100%; height: 280px;
+        }
+
+        #modalChartCanvas { width: 100%; height: 100%; }
+
+        .modal-table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+        }
+
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 20px 48px; display: flex;
+            justify-content: space-between; align-items: center;
+            font-size: 10px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 14px 24px; background: var(--text-primary);
+            color: white; font-size: 13px; font-weight: 500;
+            z-index: 2000; transform: translateY(100px); opacity: 0;
+            transition: all 0.3s; border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { background: var(--error); }
+        .toast.success { background: var(--success); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in { animation: fadeIn 0.5s ease forwards; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse { animation: pulse 2s ease-in-out infinite; }
+
+        @media (max-width: 1024px) {
+            .hero { grid-template-columns: 1fr; }
+            .hero-title { font-size: 36px; }
+            .setup-grid { grid-template-columns: 1fr; }
+            .detected-grid { grid-template-columns: repeat(2, 1fr); }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .modal-summary { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .header { padding: 12px 20px; }
+            .hero { padding: 32px 20px; }
+            .main-wrapper { padding: 20px; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .detected-grid { grid-template-columns: 1fr; }
+            .modal-summary { grid-template-columns: 1fr; }
+        }
+    </style>
+<base target="_blank">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+        <img src="favicon.png" alt="FM" class="logo-icon">   
+        <div class="header-brand">
+                FLOW-MASTER SYSTEMS
+                <span>City Water Management Board &mdash; Hydraulics Console</span>
+            </div>
+        </div>
+        <div class="header-right">Build v3.7 &mdash; Antonini|Colombo|Rigamonti|Tuzzeo</div>
+    </header>
+
+    <section class="hero">
+        <div style="grid-column: 2;">
+            <div class="hero-badge">Group 02 &mdash; Drainage Canal Flow Analysis</div>
+            <h1 class="hero-title">
+                Compute Total<br>
+                Water Volume<br>
+                <span class="highlight">Numerically.</span>
+            </h1>
+            <p class="hero-desc">
+                Upload velocity samples from a drainage canal, choose your CSV mapping, pick the section area &amp; sampling step. 
+                The console runs Rectangle, Trapezoidal, and Simpson's rules to estimate <strong>V = A &middot; &int;v(t) dt</strong> 
+                and renders an oscilloscope-style telemetry feed.
+            </p>
+        </div>
+        <div class="quick-reference" style="grid-column: 4;">
+            <h3>Quick Reference</h3>
+            <ul>
+                <li><span>Section area A &mdash; constant (m&sup2;)</span></li>
+                <li><span>Sampling step h &mdash; seconds between v readings</span></li>
+                <li><span>Rectangle = left-endpoint sum</span></li>
+                <li><span>Trapezoidal = linear interpolation</span></li>
+                <li><span>Simpson = quadratic, highest accuracy</span></li>
+            </ul>
+            <div class="csv-example">
+                CSV example:<br>
+                time,velocity<br>
+                7.0,0.2<br>
+                7.5,0.3<br>
+                8.0,0.5
+            </div>
+        </div>
+    </section>
+
+    <div class="main-wrapper">
+
+        <div class="section-title">01 &middot; Data</div>
+        <div class="dropzone-wrapper">
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-icon">&#x21EA;</div>
+                <div class="dropzone-text">Drop CSV file here</div>
+                <div class="dropzone-sub">or click to browse &mdash; supports comma / semicolon / tab delimiters</div>
+                <button class="btn-browse">Browse Files</button>
+                <input type="file" class="file-input" id="fileInput" accept=".csv,.txt">
+            </div>
+
+            <div class="file-info" id="fileInfo">
+                <div class="file-info-icon">&#x2713;</div>
+                <div class="file-info-text">
+                    <div class="file-info-name" id="fileName"></div>
+                    <div class="file-info-meta" id="fileSize"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">02 &middot; Setup</div>
+        <div class="setup-panel">
+            <div class="setup-grid">
+                <div class="form-group">
+                    <label class="form-label">Section Area A (m&sup2;)</label>
+                    <input type="number" class="form-input" id="sectionArea" value="4" step="0.1" min="0">
+                    <div class="input-hint">Constant cross-section area</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sampling h (seconds)</label>
+                    <input type="number" class="form-input" id="samplingStep" value="60" step="1" min="1">
+                    <div class="input-hint">&Delta;t between velocity samples</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Run Label</label>
+                    <input type="text" class="form-input" id="runLabel" placeholder="E.g. Morning sweep &mdash; post-storm">
+                    <div class="input-hint">Descriptive name for this run</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Canal ID</label>
+                    <input type="text" class="form-input" id="canalId" placeholder="E.g. CNL-87">
+                    <div class="input-hint">Canal identifier code</div>
+                </div>
+            </div>
+
+            <div class="setup-divider"></div>
+
+            <div class="detected-grid">
+                <div class="detected-item">
+                    <div class="detected-label">File</div>
+                    <div class="detected-value missing" id="detectedFile">&mdash;</div>
+                </div>
+                <div class="detected-item">
+                    <div class="detected-label">Velocity Samples</div>
+                    <div class="detected-value missing" id="detectedSamples">&mdash;</div>
+                </div>
+                <div class="detected-item">
+                    <div class="detected-label">Effective h</div>
+                    <div class="detected-value" id="detectedH">60 s</div>
+                </div>
+                <div class="detected-item">
+                    <div class="detected-label">Status</div>
+                    <div class="detected-value status" id="detectedStatus" style="color: var(--text-muted);">Incomplete</div>
+                </div>
+            </div>
+
+            <div class="compute-section">
+                <button class="btn-compute" id="computeBtn" disabled>
+                    <span>&#x25c8;</span> Compute Volume
+                </button>
+            </div>
+        </div>
+
+        <div class="section-title pink">03 &middot; Results</div>
+        <div class="results-area" id="resultsArea">
+            <div class="results-placeholder" id="resultsPlaceholder">
+                <div class="results-placeholder-icon">&#x231b;</div>
+                <div class="results-placeholder-title">Awaiting Computation</div>
+                <div class="results-placeholder-desc">Upload CSV &rarr; configure parameters &rarr; press Compute Volume</div>
+            </div>
+            <div id="resultsContent" style="display: none;"></div>
+        </div>
+
+        <div class="section-title pink">04 &middot; Audit Log</div>
+        <div class="audit-section">
+            <div class="audit-header">
+                <div class="audit-title">Past Runs</div>
+                <div class="audit-count"><span id="auditCount">0</span> entries</div>
+            </div>
+            <table class="audit-table">
+                <thead>
+                    <tr>
+                        <th>When</th>
+                        <th>Label</th>
+                        <th>Canal</th>
+                        <th>A (m&sup2;)</th>
+                        <th>h (s)</th>
+                        <th>n</th>
+                        <th>V (m&sup3;)</th>
+                        <th style="width: 60px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="auditBody">
+                    <tr>
+                        <td colspan="8" class="audit-empty">No runs recorded yet. Upload data and compute to start.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div>Flow-Master &mdash; Hydraulics Console &mdash; 2026</div>
+        <div>Antonini|Colombo|Rigamonti|Tuzzeo</div>
+    </footer>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Run Details</div>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ===== STATE =====
+        let parsedData = null;
+        let auditLog = JSON.parse(localStorage.getItem('flowmaster_audit_v3.7') || '[]');
+        let currentChartData = null;
+        let currentResults = null;
+
+        // ===== DOM ELEMENTS =====
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameEl = document.getElementById('fileName');
+        const fileSizeEl = document.getElementById('fileSize');
+        const computeBtn = document.getElementById('computeBtn');
+        const resultsPlaceholder = document.getElementById('resultsPlaceholder');
+        const resultsContent = document.getElementById('resultsContent');
+        const toast = document.getElementById('toast');
+        const auditBody = document.getElementById('auditBody');
+        const auditCount = document.getElementById('auditCount');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const modalBody = document.getElementById('modalBody');
+        const modalTitle = document.getElementById('modalTitle');
+
+        // ===== CSV PARSING =====
+        function parseCSV(text) {
+            const lines = text.trim().split(/\r?\n/);
+            if (lines.length < 2) return null;
+
+            let delimiter = ',';
+            const firstLine = lines[0];
+            if (firstLine.includes(';') && !firstLine.includes(',')) delimiter = ';';
+            else if (firstLine.includes('\t') && !firstLine.includes(',')) delimiter = '\t';
+
+            const data = [];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                const cols = line.split(delimiter).map(v => v.trim());
+
+                const nums = cols.map(v => {
+                    const n = parseFloat(v.replace(',', '.'));
+                    return isNaN(n) ? null : n;
+                }).filter(v => v !== null);
+
+                if (nums.length >= 2) {
+                    data.push({ time: nums[0], velocity: nums[1] });
+                } else if (nums.length === 1 && data.length > 0) {
+                    data.push({ time: data.length, velocity: nums[0] });
+                }
+            }
+
+            return data.length >= 2 ? data : null;
+        }
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                parsedData = parseCSV(text);
+
+                if (parsedData) {
+                    fileNameEl.textContent = file.name;
+                    fileSizeEl.textContent = `${parsedData.length} velocity samples loaded`;
+                    fileInfo.classList.add('show');
+
+                    document.getElementById('detectedFile').textContent = file.name;
+                    document.getElementById('detectedFile').classList.remove('missing');
+                    document.getElementById('detectedSamples').textContent = parsedData.length;
+                    document.getElementById('detectedSamples').classList.remove('missing');
+                    document.getElementById('detectedStatus').textContent = 'Ready';
+                    document.getElementById('detectedStatus').style.color = 'var(--success)';
+
+                    computeBtn.disabled = false;
+                    showToast('CSV loaded successfully', 'success');
+                } else {
+                    showToast('Could not parse CSV. Ensure 2 numeric columns.', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ===== DROPZONE EVENTS =====
+        dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        // ===== INTEGRATION METHODS =====
+        function rectangleRule(data, h) {
+            let sum = 0;
+            for (let i = 0; i < data.length; i++) sum += data[i].velocity;
+            return h * sum;
+        }
+
+        function trapezoidalRule(data, h) {
+            let sum = data[0].velocity + data[data.length - 1].velocity;
+            for (let i = 1; i < data.length - 1; i++) sum += 2 * data[i].velocity;
+            return (h / 2) * sum;
+        }
+
+        function simpsonRule(data, h) {
+            const n = data.length - 1;
+            if (n % 2 !== 0) {
+                let sum = data[0].velocity + data[data.length - 2].velocity;
+                for (let i = 1; i < data.length - 2; i++) {
+                    sum += (i % 2 === 0 ? 2 : 4) * data[i].velocity;
+                }
+                const simpsonPart = (h / 3) * sum;
+                const trapPart = (h / 2) * (data[data.length - 2].velocity + data[data.length - 1].velocity);
+                return simpsonPart + trapPart;
+            }
+
+            let sum = data[0].velocity + data[data.length - 1].velocity;
+            for (let i = 1; i < data.length - 1; i++) {
+                sum += (i % 2 === 0 ? 2 : 4) * data[i].velocity;
+            }
+            return (h / 3) * sum;
+        }
+
+        // ===== CHART RENDERING =====
+        function drawChart(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            const padding = { top: 24, right: 50, bottom: 40, left: 60 };
+            const chartW = w - padding.left - padding.right;
+            const chartH = h - padding.top - padding.bottom;
+
+            const times = data.map(d => d.time);
+            const vels = data.map(d => d.velocity);
+            const minT = Math.min(...times);
+            const maxT = Math.max(...times);
+            const minV = 0;
+            const maxV = Math.max(...vels) * 1.15;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Grid lines
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding.top + (chartH / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(padding.left + chartW, y);
+                ctx.stroke();
+
+                const val = maxV - (maxV / 5) * i;
+                ctx.fillStyle = '#aaa';
+                ctx.font = '10px "JetBrains Mono"';
+                ctx.textAlign = 'right';
+                ctx.fillText(val.toFixed(2), padding.left - 10, y + 3);
+            }
+
+            // X labels
+            for (let i = 0; i <= 6; i++) {
+                const x = padding.left + (chartW / 6) * i;
+                const val = minT + ((maxT - minT) / 6) * i;
+                ctx.fillStyle = '#aaa';
+                ctx.font = '10px "JetBrains Mono"';
+                ctx.textAlign = 'center';
+                ctx.fillText(val.toFixed(1), x, h - 12);
+            }
+
+            // Velocity line
+            ctx.strokeStyle = '#e91e8c';
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = padding.left + ((data[i].time - minT) / (maxT - minT)) * chartW;
+                const y = padding.top + chartH - ((data[i].velocity - minV) / (maxV - minV)) * chartH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Fill area
+            ctx.fillStyle = 'rgba(233, 30, 140, 0.06)';
+            ctx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = padding.left + ((data[i].time - minT) / (maxT - minT)) * chartW;
+                const y = padding.top + chartH - ((data[i].velocity - minV) / (maxV - minV)) * chartH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.lineTo(padding.left + chartW, padding.top + chartH);
+            ctx.lineTo(padding.left, padding.top + chartH);
+            ctx.closePath();
+            ctx.fill();
+
+            // Points
+            ctx.fillStyle = '#e91e8c';
+            const step = Math.max(1, Math.floor(data.length / 25));
+            for (let i = 0; i < data.length; i += step) {
+                const x = padding.left + ((data[i].time - minT) / (maxT - minT)) * chartW;
+                const y = padding.top + chartH - ((data[i].velocity - minV) / (maxV - minV)) * chartH;
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            // Axis labels
+            ctx.fillStyle = '#666';
+            ctx.font = '11px "Inter"';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (h)', padding.left + chartW / 2, h - 2);
+
+            ctx.save();
+            ctx.translate(16, padding.top + chartH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Velocity (m/s)', 0, 0);
+            ctx.restore();
+
+            // Store chart metrics for tooltip
+            canvas.chartMetrics = { padding, chartW, chartH, minT, maxT, minV, maxV, data };
+        }
+
+        function setupChartTooltip(canvasId, tooltipId) {
+            const canvas = document.getElementById(canvasId);
+            const tooltip = document.getElementById(tooltipId);
+            if (!canvas || !tooltip) return;
+
+            canvas.addEventListener('mousemove', (e) => {
+                const metrics = canvas.chartMetrics;
+                if (!metrics) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const { padding, chartW, chartH, minT, maxT, minV, maxV, data } = metrics;
+
+                if (x < padding.left || x > padding.left + chartW || 
+                    y < padding.top || y > padding.top + chartH) {
+                    tooltip.classList.remove('show');
+                    return;
+                }
+
+                const timeVal = minT + ((x - padding.left) / chartW) * (maxT - minT);
+
+                // Find closest data point
+                let closest = data[0];
+                let minDist = Infinity;
+                for (const d of data) {
+                    const dist = Math.abs(d.time - timeVal);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closest = d;
+                    }
+                }
+
+                const px = padding.left + ((closest.time - minT) / (maxT - minT)) * chartW;
+                const py = padding.top + chartH - ((closest.velocity - minV) / (maxV - minV)) * chartH;
+
+                // Redraw chart with crosshair
+                drawChart(canvasId, data);
+                const ctx = canvas.getContext('2d');
+
+                // Crosshair lines
+                ctx.strokeStyle = 'rgba(233, 30, 140, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(px, padding.top);
+                ctx.lineTo(px, padding.top + chartH);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(padding.left, py);
+                ctx.lineTo(padding.left + chartW, py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Highlight point
+                ctx.fillStyle = '#e91e8c';
+                ctx.beginPath();
+                ctx.arc(px, py, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Position tooltip
+                let tx = e.clientX + 16;
+                let ty = e.clientY - 16;
+                const tooltipRect = tooltip.getBoundingClientRect();
+                if (tx + tooltipRect.width > window.innerWidth) tx = e.clientX - tooltipRect.width - 16;
+                if (ty < 0) ty = e.clientY + 16;
+
+                tooltip.style.left = tx + 'px';
+                tooltip.style.top = ty + 'px';
+                tooltip.innerHTML = `
+                    <div class="chart-tooltip-row">
+                        <span class="chart-tooltip-label">Time</span>
+                        <span class="chart-tooltip-value">${closest.time.toFixed(2)} h</span>
+                    </div>
+                    <div class="chart-tooltip-row">
+                        <span class="chart-tooltip-label">Velocity</span>
+                        <span class="chart-tooltip-value">${closest.velocity.toFixed(2)} m/s</span>
+                    </div>
+                `;
+                tooltip.classList.add('show');
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('show');
+                const metrics = canvas.chartMetrics;
+                if (metrics) drawChart(canvasId, metrics.data);
+            });
+        }
+
+        // ===== COMPUTE =====
+        computeBtn.addEventListener('click', () => {
+            if (!parsedData) return;
+
+            const A = parseFloat(document.getElementById('sectionArea').value) || 4;
+            const h = parseFloat(document.getElementById('samplingStep').value) || 60;
+            const label = document.getElementById('runLabel').value || 'Untitled Run';
+            const canalId = document.getElementById('canalId').value || '—';
+
+            const rectIntegral = rectangleRule(parsedData, h);
+            const trapIntegral = trapezoidalRule(parsedData, h);
+            const simpIntegral = simpsonRule(parsedData, h);
+
+            const rectVol = A * rectIntegral;
+            const trapVol = A * trapIntegral;
+            const simpVol = A * simpIntegral;
+
+            const duration = (parsedData[parsedData.length - 1].time - parsedData[0].time) * 3600;
+            const peakVel = Math.max(...parsedData.map(d => d.velocity));
+            const peakTime = parsedData.find(d => d.velocity === peakVel).time;
+
+            currentChartData = parsedData;
+            currentResults = { rectVol, trapVol, simpVol, rectIntegral, trapIntegral, simpIntegral, A, h, duration, peakVel, peakTime };
+
+            resultsPlaceholder.style.display = 'none';
+            resultsContent.style.display = 'block';
+            resultsContent.innerHTML = `
+                <div class="animate-in">
+                    <!-- Summary Cards -->
+                    <div class="summary-grid">
+                        <div class="summary-card primary">
+                            <div class="summary-label">Total Volume (Simpson)</div>
+                            <div class="summary-value">${simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="summary-unit">m³</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Duration</div>
+                            <div class="summary-value">${Math.round(duration)}</div>
+                            <div class="summary-unit">seconds</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Peak Velocity</div>
+                            <div class="summary-value">${peakVel.toFixed(2)}</div>
+                            <div class="summary-unit">m/s @ t=${peakTime.toFixed(1)}h</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Samples</div>
+                            <div class="summary-value">${parsedData.length}</div>
+                            <div class="summary-unit">${parsedData.length - 1} intervals</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Velocity Profile · v(t)</div>
+                            <div class="chart-meta">n = ${parsedData.length} · h = ${h}s</div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="chartCanvas"></canvas>
+                            <div class="chart-tooltip" id="chartTooltip"></div>
+                        </div>
+                    </div>
+
+                    <!-- Method Comparison -->
+                    <div class="comparison-section">
+                        <div class="comparison-header">
+                            <div class="comparison-title">Method Comparison</div>
+                            <div class="export-btns">
+                                <button class="btn-export" onclick="exportResults('csv')">↓ CSV</button>
+                                <button class="btn-export" onclick="exportResults('pdf')">📄 PDF</button>
+                            </div>
+                        </div>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>∫v dt (m)</th>
+                                    <th>Total Volume (m³)</th>
+                                    <th>Formula</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="method-name">Rectangle Rule</div>
+                                        <div class="method-desc">First-order accurate. Uses left endpoint.</div>
+                                    </td>
+                                    <td>${rectIntegral.toFixed(4)}</td>
+                                    <td class="volume-value">${rectVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td><span class="formula">V = A · h · Σvᵢ</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="method-name">Trapezoidal Rule</div>
+                                        <div class="method-desc">Second-order accurate. Linear interpolation.</div>
+                                    </td>
+                                    <td>${trapIntegral.toFixed(4)}</td>
+                                    <td class="volume-value">${trapVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td><span class="formula">V = A · (h/2) · [v₀ + 2Σvᵢ + vₙ]</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="method-name">Simpson's Rule</div>
+                                        <div class="method-desc">Fourth-order accurate. Quadratic fit.</div>
+                                    </td>
+                                    <td>${simpIntegral.toFixed(4)}</td>
+                                    <td class="volume-value simpson">${simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td><span class="formula">V = A · (h/3) · [v₀ + 4Σv_odd + 2Σv_even + vₙ]</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="comparison-footer">
+                            Volume formula: V = A · ∫₀ᵀ v(t) dt &nbsp;&nbsp;·&nbsp;&nbsp; A = ${A} m² &nbsp;&nbsp;·&nbsp;&nbsp; T = ${Math.round(duration)} s
+                        </div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="data-section">
+                        <div class="section-title" style="margin-bottom: 16px;">Sample Data</div>
+                        <div class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Time (h)</th>
+                                        <th>Velocity (m/s)</th>
+                                        <th>Flow Rate Q (m³/s)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${parsedData.map((d, i) => `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${d.time.toFixed(2)}</td>
+                                            <td>${d.velocity.toFixed(2)}</td>
+                                            <td>${(d.velocity * A).toFixed(2)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            requestAnimationFrame(() => {
+                drawChart('chartCanvas', parsedData);
+                setupChartTooltip('chartCanvas', 'chartTooltip');
+            });
+
+            // Add to audit log
+            const entry = {
+                id: Date.now(),
+                when: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                label,
+                canal: canalId,
+                A,
+                h,
+                n: parsedData.length,
+                volume: simpVol,
+                rectVol,
+                trapVol,
+                simpVol,
+                rectIntegral,
+                trapIntegral,
+                simpIntegral,
+                duration,
+                peakVel,
+                peakTime,
+                data: parsedData.map(d => ({ time: d.time, velocity: d.velocity }))
+            };
+            auditLog.unshift(entry);
+            localStorage.setItem('flowmaster_audit_v3.7', JSON.stringify(auditLog));
+            renderAuditLog();
+
+            showToast('Computation complete!', 'success');
+        });
+
+        // ===== AUDIT LOG =====
+        function renderAuditLog() {
+            auditCount.textContent = auditLog.length;
+            if (auditLog.length === 0) {
+                auditBody.innerHTML = `<tr><td colspan="8" class="audit-empty">No runs recorded yet. Upload data and compute to start.</td></tr>`;
+                return;
+            }
+
+            auditBody.innerHTML = auditLog.map(entry => `
+                <tr onclick="openAuditModal(${entry.id})">
+                    <td>${entry.when}</td>
+                    <td>${entry.label}</td>
+                    <td>${entry.canal}</td>
+                    <td>${entry.A}</td>
+                    <td>${entry.h}</td>
+                    <td>${entry.n}</td>
+                    <td style="font-weight: 600; color: var(--accent-pink);">${entry.volume.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>
+                        <div class="audit-actions" onclick="event.stopPropagation()">
+                            <button class="audit-btn" onclick="deleteAudit(${entry.id})" title="Delete">×</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.deleteAudit = function(id) {
+            auditLog = auditLog.filter(e => e.id !== id);
+            localStorage.setItem('flowmaster_audit_v3.7', JSON.stringify(auditLog));
+            renderAuditLog();
+            showToast('Run deleted', 'success');
+        };
+
+        window.openAuditModal = function(id) {
+            const entry = auditLog.find(e => e.id === id);
+            if (!entry) return;
+
+            modalTitle.textContent = `${entry.label} — ${entry.canal}`;
+            modalBody.innerHTML = `
+                <div class="modal-summary">
+                    <div class="modal-summary-card">
+                        <div class="modal-summary-label">Total Volume</div>
+                        <div class="modal-summary-value pink">${entry.simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    </div>
+                    <div class="modal-summary-card">
+                        <div class="modal-summary-label">Duration</div>
+                        <div class="modal-summary-value">${Math.round(entry.duration)} s</div>
+                    </div>
+                    <div class="modal-summary-card">
+                        <div class="modal-summary-label">Peak Velocity</div>
+                        <div class="modal-summary-value">${entry.peakVel.toFixed(2)} m/s</div>
+                    </div>
+                    <div class="modal-summary-card">
+                        <div class="modal-summary-label">Samples</div>
+                        <div class="modal-summary-value">${entry.n}</div>
+                    </div>
+                </div>
+
+                <div class="modal-chart-container">
+                    <div class="chart-header" style="margin-bottom: 12px;">
+                        <div class="chart-title">Velocity Profile · v(t)</div>
+                        <div class="chart-meta">n = ${entry.n} · h = ${entry.h}s</div>
+                    </div>
+                    <div class="modal-chart-wrapper">
+                        <canvas id="modalChartCanvas"></canvas>
+                        <div class="chart-tooltip" id="modalChartTooltip"></div>
+                    </div>
+                </div>
+
+                <div class="comparison-section" style="margin-bottom: 0;">
+                    <div class="comparison-header">
+                        <div class="comparison-title">Method Comparison</div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>∫v dt (m)</th>
+                                <th>Total Volume (m³)</th>
+                                <th>Formula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="method-name">Rectangle Rule</div>
+                                    <div class="method-desc">First-order accurate.</div>
+                                </td>
+                                <td>${entry.rectIntegral.toFixed(4)}</td>
+                                <td class="volume-value">${entry.rectVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                <td><span class="formula">V = A · h · Σvᵢ</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="method-name">Trapezoidal Rule</div>
+                                    <div class="method-desc">Second-order accurate.</div>
+                                </td>
+                                <td>${entry.trapIntegral.toFixed(4)}</td>
+                                <td class="volume-value">${entry.trapVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                <td><span class="formula">V = A · (h/2) · [v₀ + 2Σvᵢ + vₙ]</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="method-name">Simpson's Rule</div>
+                                    <div class="method-desc">Fourth-order accurate.</div>
+                                </td>
+                                <td>${entry.simpIntegral.toFixed(4)}</td>
+                                <td class="volume-value simpson">${entry.simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                <td><span class="formula">V = A · (h/3) · [v₀ + 4Σv_odd + 2Σv_even + vₙ]</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="comparison-footer">
+                        Volume formula: V = A · ∫₀ᵀ v(t) dt &nbsp;&nbsp;·&nbsp;&nbsp; A = ${entry.A} m² &nbsp;&nbsp;·&nbsp;&nbsp; T = ${Math.round(entry.duration)} s
+                    </div>
+                </div>
+            `;
+
+            modalOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            requestAnimationFrame(() => {
+                drawChart('modalChartCanvas', entry.data);
+                setupChartTooltip('modalChartCanvas', 'modalChartTooltip');
+            });
+        };
+
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // ===== EXPORT =====
+        window.exportResults = function(format) {
+            if (!currentResults || !parsedData) return;
+
+            if (format === 'csv') {
+                let csv = 'time,velocity,flow_rate\n';
+                const A = parseFloat(document.getElementById('sectionArea').value) || 4;
+                parsedData.forEach(d => {
+                    csv += `${d.time},${d.velocity},${(d.velocity * A).toFixed(4)}\n`;
+                });
+                csv += `\nMethod,Integral,Volume\n`;
+                csv += `Rectangle,${currentResults.rectIntegral.toFixed(4)},${currentResults.rectVol.toFixed(2)}\n`;
+                csv += `Trapezoidal,${currentResults.trapIntegral.toFixed(4)},${currentResults.trapVol.toFixed(2)}\n`;
+                csv += `Simpson,${currentResults.simpIntegral.toFixed(4)},${currentResults.simpVol.toFixed(2)}\n`;
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'flowmaster_results.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('CSV exported', 'success');
+            } else {
+                showToast('PDF export coming soon', 'success');
+            }
+        };
+
+        // ===== TOAST =====
+        function showToast(msg, type = '') {
+            toast.textContent = msg;
+            toast.className = 'toast ' + type;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ===== INIT =====
+        renderAuditLog();
+
+        window.addEventListener('resize', () => {
+            if (currentChartData && resultsContent.style.display !== 'none') {
+                drawChart('chartCanvas', currentChartData);
+            }
+        });
+    </script>
+</body>
+</html>
