@@ -1392,7 +1392,7 @@
                                     </td>
                                     <td>${rectIntegral.toFixed(4)}</td>
                                     <td class="volume-value">${rectVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td style="color: var(--error); font-weight: 600;">+${(rectVol - simpVol).toFixed(2)} <span style="font-size: 10px; color: var(--text-muted);">(${(Math.abs((rectVol - simpVol) / simpVol) * 100).toFixed(2)}%)</span></td>
+                                    <td style="color: var(--error); font-weight: 600;">+${(rectVol - simpVol).toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${(Math.abs((rectVol - simpVol) / simpVol) * 100).toFixed(6)}%)</span></td>
                                     <td><span class="formula">V = A · h · Σvᵢ</span></td>
                                 </tr>
                                 <tr>
@@ -1402,7 +1402,7 @@
                                     </td>
                                     <td>${trapIntegral.toFixed(4)}</td>
                                     <td class="volume-value">${trapVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td style="color: var(--warning); font-weight: 600;">+${(trapVol - simpVol).toFixed(2)} <span style="font-size: 10px; color: var(--text-muted);">(${(Math.abs((trapVol - simpVol) / simpVol) * 100).toFixed(2)}%)</span></td>
+                                    <td style="color: var(--warning); font-weight: 600;">+${(trapVol - simpVol).toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${(Math.abs((trapVol - simpVol) / simpVol) * 100).toFixed(6)}%)</span></td>
                                     <td><span class="formula">V = A · (h/2) · [v₀ + 2Σvᵢ + vₙ]</span></td>
                                 </tr>
                                 <tr>
@@ -1412,7 +1412,7 @@
                                     </td>
                                     <td>${simpIntegral.toFixed(4)}</td>
                                     <td class="volume-value simpson">${simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td style="color: var(--success); font-weight: 600;">0.00 <span style="font-size: 10px; color: var(--text-muted);">(0.00%)</span></td>
+                                    <td style="color: var(--success); font-weight: 600;">0.000000 <span style="font-size: 10px; color: var(--text-muted);">(0.000000%)</span></td>
                                     <td><span class="formula">V = A · (h/3) · [v₀ + 4Σv_odd + 2Σv_even + vₙ]</span></td>
                                 </tr>
                             </tbody>
@@ -1579,7 +1579,7 @@
                                 </td>
                                 <td>${entry.rectIntegral.toFixed(4)}</td>
                                 <td class="volume-value">${entry.rectVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                <td style="color: var(--error); font-weight: 600;">+${entry.rectError.toFixed(2)} <span style="font-size: 10px; color: var(--text-muted);">(${entry.rectErrorPct.toFixed(2)}%)</span></td>
+                                <td style="color: var(--error); font-weight: 600;">+${entry.rectError.toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${entry.rectErrorPct.toFixed(6)}%)</span></td>
                                 <td><span class="formula">V = A · h · Σvᵢ</span></td>
                             </tr>
                             <tr>
@@ -1589,7 +1589,7 @@
                                 </td>
                                 <td>${entry.trapIntegral.toFixed(4)}</td>
                                 <td class="volume-value">${entry.trapVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                <td style="color: var(--warning); font-weight: 600;">+${entry.trapError.toFixed(2)} <span style="font-size: 10px; color: var(--text-muted);">(${entry.trapErrorPct.toFixed(2)}%)</span></td>
+                                <td style="color: var(--warning); font-weight: 600;">+${entry.trapError.toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${entry.trapErrorPct.toFixed(6)}%)</span></td>
                                 <td><span class="formula">V = A · (h/2) · [v₀ + 2Σvᵢ + vₙ]</span></td>
                             </tr>
                             <tr>
@@ -1599,7 +1599,7 @@
                                 </td>
                                 <td>${entry.simpIntegral.toFixed(4)}</td>
                                 <td class="volume-value simpson">${entry.simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                <td style="color: var(--success); font-weight: 600;">0.00 <span style="font-size: 10px; color: var(--text-muted);">(0.00%)</span></td>
+                                <td style="color: var(--success); font-weight: 600;">0.000000 <span style="font-size: 10px; color: var(--text-muted);">(0.000000%)</span></td>
                                 <td><span class="formula">V = A · (h/3) · [v₀ + 4Σv_odd + 2Σv_even + vₙ]</span></td>
                             </tr>
                         </tbody>
