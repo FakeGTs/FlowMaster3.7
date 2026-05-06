@@ -61,7 +61,6 @@
             border-radius: var(--radius);
             object-fit: cover;
             display: block;
-            border: 1px solid var(--border-color);  
         }
 
         .header-brand {
@@ -791,14 +790,12 @@
         }
     </style>
 <base target="_blank">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
     <header class="header">
         <div class="header-left">
-        <img src="favicon.png" alt="FM" class="logo-icon">   
-        <div class="header-brand">
+            <img src="favicon.png" alt="FM" class="logo-icon">
+            <div class="header-brand">
                 FLOW-MASTER SYSTEMS
                 <span>City Water Management Board &mdash; Hydraulics Console</span>
             </div>
@@ -1383,6 +1380,7 @@
                                     <th>Method</th>
                                     <th>∫v dt (m)</th>
                                     <th>Total Volume (m³)</th>
+                                    <th>Error vs Simpson</th>
                                     <th>Formula</th>
                                 </tr>
                             </thead>
@@ -1394,6 +1392,7 @@
                                     </td>
                                     <td>${rectIntegral.toFixed(4)}</td>
                                     <td class="volume-value">${rectVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td style="color: var(--error); font-weight: 600;">+${(rectVol - simpVol).toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${(Math.abs((rectVol - simpVol) / simpVol) * 100).toFixed(6)}%)</span></td>
                                     <td><span class="formula">V = A · h · Σvᵢ</span></td>
                                 </tr>
                                 <tr>
@@ -1403,15 +1402,17 @@
                                     </td>
                                     <td>${trapIntegral.toFixed(4)}</td>
                                     <td class="volume-value">${trapVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td style="color: var(--warning); font-weight: 600;">+${(trapVol - simpVol).toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${(Math.abs((trapVol - simpVol) / simpVol) * 100).toFixed(6)}%)</span></td>
                                     <td><span class="formula">V = A · (h/2) · [v₀ + 2Σvᵢ + vₙ]</span></td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <div class="method-name">Simpson's Rule</div>
-                                        <div class="method-desc">Fourth-order accurate. Quadratic fit.</div>
+                                        <div class="method-desc">Fourth-order accurate. Quadratic fit. (Reference)</div>
                                     </td>
                                     <td>${simpIntegral.toFixed(4)}</td>
                                     <td class="volume-value simpson">${simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td style="color: var(--success); font-weight: 600;">0.000000 <span style="font-size: 10px; color: var(--text-muted);">(0.000000%)</span></td>
                                     <td><span class="formula">V = A · (h/3) · [v₀ + 4Σv_odd + 2Σv_even + vₙ]</span></td>
                                 </tr>
                             </tbody>
@@ -1471,6 +1472,10 @@
                 rectIntegral,
                 trapIntegral,
                 simpIntegral,
+                rectError: rectVol - simpVol,
+                trapError: trapVol - simpVol,
+                rectErrorPct: Math.abs((rectVol - simpVol) / simpVol) * 100,
+                trapErrorPct: Math.abs((trapVol - simpVol) / simpVol) * 100,
                 duration,
                 peakVel,
                 peakTime,
@@ -1562,6 +1567,7 @@
                                 <th>Method</th>
                                 <th>∫v dt (m)</th>
                                 <th>Total Volume (m³)</th>
+                                <th>Error vs Simpson</th>
                                 <th>Formula</th>
                             </tr>
                         </thead>
@@ -1573,6 +1579,7 @@
                                 </td>
                                 <td>${entry.rectIntegral.toFixed(4)}</td>
                                 <td class="volume-value">${entry.rectVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                <td style="color: var(--error); font-weight: 600;">+${entry.rectError.toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${entry.rectErrorPct.toFixed(6)}%)</span></td>
                                 <td><span class="formula">V = A · h · Σvᵢ</span></td>
                             </tr>
                             <tr>
@@ -1582,15 +1589,17 @@
                                 </td>
                                 <td>${entry.trapIntegral.toFixed(4)}</td>
                                 <td class="volume-value">${entry.trapVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                <td style="color: var(--warning); font-weight: 600;">+${entry.trapError.toFixed(6)} <span style="font-size: 10px; color: var(--text-muted);">(${entry.trapErrorPct.toFixed(6)}%)</span></td>
                                 <td><span class="formula">V = A · (h/2) · [v₀ + 2Σvᵢ + vₙ]</span></td>
                             </tr>
                             <tr>
                                 <td>
                                     <div class="method-name">Simpson's Rule</div>
-                                    <div class="method-desc">Fourth-order accurate.</div>
+                                    <div class="method-desc">Fourth-order accurate. (Reference)</div>
                                 </td>
                                 <td>${entry.simpIntegral.toFixed(4)}</td>
                                 <td class="volume-value simpson">${entry.simpVol.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                <td style="color: var(--success); font-weight: 600;">0.000000 <span style="font-size: 10px; color: var(--text-muted);">(0.000000%)</span></td>
                                 <td><span class="formula">V = A · (h/3) · [v₀ + 4Σv_odd + 2Σv_even + vₙ]</span></td>
                             </tr>
                         </tbody>
